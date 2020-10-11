@@ -29,42 +29,48 @@ private:
 	std::vector<Val> cache;
 };
 
-[[maybe_unused]] [[nodiscard]] size_t computeN(long double t, long double epsilon) noexcept {
-	Power<long double> power(t);
-	Factorial<long double> factorial;
+template<typename Val>
+[[maybe_unused]] [[nodiscard]] size_t computeN(Val t, Val epsilon) noexcept {
+	Power<Val> power(t);
+	Factorial<Val> factorial;
 	for (size_t n = 0;;) {
-		long double nderiv;
+		Val nderiv;
 		std::cout << "Input the value of " << n << " derivative:";
 		std::cin >> nderiv; 
 		if (std::abs(nderiv) * power(n) / factorial(n) <= epsilon) return n;
 	}
 }
 
-[[nodiscard]] long double tangent(long double t, size_t n = 20) noexcept {
-	long double retval;
+template<typename Val>
+[[nodiscard]] Val tangent(Val t, Val n = 20) noexcept {
+	Val retval;
 	for (retval = t * t / (2 * n-- - 1); n > 0;) retval = t * t / (2 * n-- - 1 - retval);
 	return retval / t;
 }
 
-[[nodiscard]] long double sine(long double t) noexcept {
-	long double Pi = acosl(-1.L);
+template<typename Val>
+[[nodiscard]] Val sine(Val t) noexcept {
+	Val Pi = acosl(-1.L);
 	t = std::remainder(t, 2 * Pi);
 	if (Pi < t && t < 2 * Pi) t -= 2 * Pi;
 	auto sign = (t < 0) ? -1LL : 1LL;
 	t = std::abs(t);
 	if (t > Pi / 2) t = Pi - t; // now t is in [0, Pi/2]
-	long double tan4 = tangent(t / 4);
+	Val tan4 = tangent(t / 4);
 	return sign * 4 * tan4 * (1 - tan4 * tan4) / std::pow((1 + tan4 * tan4), 2);
 }
-[[nodiscard]] long double exponent(long double t, long double epsilon = 10e-15) noexcept {
-	size_t n = std::ceil(t / epsilon);
+
+template<typename Val>
+[[nodiscard]] Val exponent(Val t, Val epsilon = std::numeric_limits<Val>::epsilon()) noexcept {
+	Val n = std::ceil(t / epsilon);
 	return std::pow((1 + t / n), n);
 }
 
 // Returns -1 if there is not enough derivatives
-[[maybe_unused]] [[nodiscard]] int computeN(long double t, long double epsilon, const std::vector<long double>& derivatives) noexcept {
-	Power<long double> power(t);
-	Factorial<long double> factorial;
+template<typename Val>
+[[maybe_unused]] [[nodiscard]] int computeN(Val t, Val epsilon, const std::vector<Val>& derivatives) noexcept {
+	Power<Val> power(t);
+	Factorial<Val> factorial;
 	for (size_t n = 0; n < derivatives.size(); ++n) {
 		if (std::abs(derivatives.at(n)) * power(n) / factorial(n) <= epsilon) return n;
 	}
@@ -85,8 +91,8 @@ int main() {
 	std::cout << "Input value for sine and exponent calculation: ";
 	long double t;
 	std::cin >> t;
-	std::cout << "Sin(" << t << ") = " << sine(t) << ' ' << std::sin(t) << std::endl;
-	std::cout << "Exp(" << t << ") = " << exponent(t) << ' ' << std::exp(t) << std::endl;
+	std::cout << "Sin(" << t << ") = " << sine<long double>(t) << ' ' << std::sin(t) << std::endl;
+	std::cout << "Exp(" << t << ") = " << exponent<long double>(t) << ' ' << std::exp(t) << std::endl;
 	
 	return EXIT_SUCCESS;
 }
