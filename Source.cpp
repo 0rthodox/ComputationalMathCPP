@@ -1,9 +1,6 @@
 #include <cmath>
-#include <cstdint>
 #include <iostream>
-#include <typeinfo>
 #include <vector>
-#include <functional>
 
 template<typename Val>
 class Factorial {
@@ -43,6 +40,27 @@ private:
 	}
 }
 
+[[nodiscard]] long double tangent(long double t, size_t n = 20) noexcept {
+	long double retval;
+	for (retval = t * t / (2 * n-- - 1); n > 0;) retval = t * t / (2 * n-- - 1 - retval);
+	return retval / t;
+}
+
+[[nodiscard]] long double sine(long double t) noexcept {
+	long double Pi = acosl(-1.L);
+	t = std::remainder(t, 2 * Pi);
+	if (Pi < t && t < 2 * Pi) t -= 2 * Pi;
+	auto sign = (t < 0) ? -1LL : 1LL;
+	t = std::abs(t);
+	if (t > Pi / 2) t = Pi - t; // now t is in [0, Pi/2]
+	long double tan4 = tangent(t / 4);
+	return sign * 4 * tan4 * (1 - tan4 * tan4) / std::pow((1 + tan4 * tan4), 2);
+}
+[[nodiscard]] long double exponent(long double t, long double epsilon = 10e-15) noexcept {
+	size_t n = std::ceil(t / epsilon);
+	return std::pow((1 + t / n), n);
+}
+
 // Returns -1 if there is not enough derivatives
 [[maybe_unused]] [[nodiscard]] int computeN(long double t, long double epsilon, const std::vector<long double>& derivatives) noexcept {
 	Power<long double> power(t);
@@ -59,10 +77,16 @@ int main() {
 	auto n = 0;
 	Power<long double> power1(1 + deltaT);
 	Power<long double> power2(11 + deltaT);
-	std::cout << "Sine function: " << std::endl;
+	std::cout << "For sine function: " << std::endl;
 	for (; power1(2 * n + 1)/ factorial(2 * n + 1) > deltaT; ++n);
 	std::cout << "t in [0, 1]: n = " << n << std::endl;
 	for (n = 0; power2(2 * n + 1) / factorial(2 * n + 1) > deltaT; ++n);
 	std::cout << "t in [10, 11]: n = " << n << std::endl;
+	std::cout << "Input value for sine and exponent calculation: ";
+	long double t;
+	std::cin >> t;
+	std::cout << "Sin(" << t << ") = " << sine(t) << ' ' << std::sin(t) << std::endl;
+	std::cout << "Exp(" << t << ") = " << exponent(t) << ' ' << std::exp(t) << std::endl;
+	
 	return EXIT_SUCCESS;
 }
