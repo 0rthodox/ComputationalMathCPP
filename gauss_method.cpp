@@ -131,8 +131,8 @@ int main()
 
 	auto index = 5;
 	auto nderiv = 1;
-	auto size = size_t(10);
-	std::vector<long double> b(10, 0);
+	auto size = values.size();
+	std::vector<long double> b(size, 0);
 	b[1] = 1.L / h;
 	std::vector<std::vector<long double>> a(size);
 	std::for_each(a.begin(), a.end(), [size](auto& vect) {vect.resize(size + 1); });
