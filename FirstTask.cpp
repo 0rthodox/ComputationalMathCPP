@@ -34,8 +34,8 @@ Val fy(Val y) noexcept
 }
 int main()
 {
-	std::pair bounds = { val(0.6), val(0.7) };
-	auto error = val(1e-6);
+	std::pair bounds = { val(0.6L), val(0.7L) };
+	auto error = val(1e-6L);
 	auto distance = bounds.second - bounds.first;
 	for (; distance >= error;) {
 			if (fx(bounds.first) * fx((bounds.first + bounds.second) / 2) < 0) {
@@ -48,10 +48,8 @@ int main()
 					distance /= 2;
 				}
 	}
-	std::pair<val, val> result;
-	result.first = bounds.first;
-	bounds.first = val(0.7);
-	bounds.second = val(0.8);
+	std::pair result = { bounds.first, val() };
+	bounds = {0.7L, 0.8L};
 	distance = (bounds.second - bounds.first) / 2;
 	for (; distance >= error;) {
 		if (fy(bounds.first) * fy((bounds.first + bounds.second) / 2) < 0) {
