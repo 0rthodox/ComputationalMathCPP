@@ -18,13 +18,17 @@ private:
 template<typename Val>
 class Power {
 public:
-	Power(Val value) noexcept : cache({1, value, value * value}) {}
+	explicit Power(Val value) noexcept : cache({1, value, value * value}) {}
 	[[nodiscard]] Val operator()(size_t degree) noexcept {
 		if (degree < cache.size()) return cache.at(degree);
 		cache.reserve(degree);
 		for (; degree + 1 > cache.size();) cache.push_back(cache.back() * cache.at(1));
 		return cache.back();
 	}
+
+	Power& operator=(const Power& other) = delete;
+
+	~Power() = default;
 private:
 	std::vector<Val> cache;
 };

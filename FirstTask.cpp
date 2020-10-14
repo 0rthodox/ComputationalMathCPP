@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cmath>
-#include <iomanip>
+#include <functional>
 
 using val = long double;
 
@@ -18,53 +18,37 @@ std::pair<Val, Val> operator-(const std::pair<Val, Val>& pair) noexcept {
 template<typename Val>
 [[maybe_unused]] bool is_equal(Val a, Val b) noexcept
 {
-	return std::fabsl(a - b) < std::numeric_limits<Val>::epsilon();
+	return std::abs(a - b) < std::numeric_limits<Val>::epsilon();
 }
 
 template <typename Val>
-Val fx(Val x) noexcept
-{
-	return x * x + std::pow(std::tanl(x), 2) - Val(1);
+Val binarySearch(std::pair<Val, Val> bounds, std::function<Val(Val)> func, Val error) noexcept {
+    for (; bounds.second - bounds.first >= error;
+    (bounds.second = (func(bounds.first) * func((bounds.first + bounds.second) / 2) < 0) ?
+        (bounds.first + bounds.second) / 2 : bounds.second) &&
+    (bounds.first = (func(bounds.second) * func((bounds.first + bounds.second) / 2) < 0) ?
+        (bounds.first + bounds.second) / 2 : bounds.first));
+    return bounds.first;
 }
 
 template <typename Val>
-Val fy(Val y) noexcept
-{
-	return y * y + std::pow(std::atanl(y), 2) - Val(1);
+Val fx(Val x) noexcept {
+	return x * x + std::pow(std::tan(x), 2) - Val(1);
+}
+
+template <typename Val>
+Val fy(Val y) noexcept {
+	return y * y + std::pow(std::atan(y), 2) - Val(1);
 }
 int main()
 {
-	std::pair bounds = { val(0.6L), val(0.7L) };
-	auto error = val(1e-6L);
-	auto distance = bounds.second - bounds.first;
-	for (; distance >= error;) {
-			if (fx(bounds.first) * fx((bounds.first + bounds.second) / 2) < 0) {
-					bounds.second = (bounds.first + bounds.second)/2;
-					distance /= 2;
-			}
-			if(fx(bounds.second) * fx((bounds.first + bounds.second) / 2) < 0)
-				{
-					bounds.first = (bounds.first + bounds.second) / 2;
-					distance /= 2;
-				}
-	}
-	std::pair result = { bounds.first, val() };
-	bounds = {0.7L, 0.8L};
-	distance = (bounds.second - bounds.first) / 2;
-	for (; distance >= error;) {
-		if (fy(bounds.first) * fy((bounds.first + bounds.second) / 2) < 0) {
-			bounds.second = (bounds.first + bounds.second) / 2;
-			distance /= 2;
-		}
-		if (fy(bounds.second) * fy((bounds.first + bounds.second) / 2) < 0)
-		{
-			bounds.first = (bounds.first + bounds.second) / 2;
-			distance /= 2;
-		}
-	}
-	result.second = bounds.first;
-	std::cout.setf(std::ios::fixed);
-	std::cout.precision(6);
-	std::cout << "Answers are " << result << " and " << -result << std::endl;
+    std::pair xBounds = { val(0.6L), val(0.7L) };
+    std::pair yBounds = { val(0.7L), val(0.8L) };
+    auto error = val(1e-6L);
+    std::pair result = {binarySearch<val>(xBounds, fx<val>, error), binarySearch<val>(yBounds, fy<val>, error)};
+
+	  std::cout.setf(std::ios::fixed);
+	  std::cout.precision(6);
+	  std::cout << "Answers are " << result << " and " << -result << std::endl;
 	return EXIT_SUCCESS;
 }
