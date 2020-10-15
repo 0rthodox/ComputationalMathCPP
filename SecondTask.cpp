@@ -6,6 +6,8 @@
 #include <cmath>
 #include <numeric>
 
+using val = long double;
+
 template<typename Val>
 bool is_equal(Val a, Val b)
 {
@@ -126,17 +128,16 @@ template<typename Val>
 int main()
 {
 	auto h = 10;
-	std::vector<long double> values = { 92228496, 106021537, 123202624, 132164569, 151325798,
+	std::vector<val> values = { 92228496, 106021537, 123202624, 132164569, 151325798,
 		179323175, 203211926, 226545805, 248709873, 281421906 };
 
 	auto index = 5;
-	auto nderiv = 1;
 	auto size = values.size();
-	std::vector<long double> b(size, 0);
+	std::vector<val> b(size, 0);
 	b[1] = 1.L / h;
-	std::vector<std::vector<long double>> a(size);
+	std::vector<std::vector<val>> a(size);
 	std::for_each(a.begin(), a.end(), [size](auto& vect) {vect.resize(size + 1); });
-	Factorial<long double> factorial;
+	Factorial<val> factorial;
 	for (auto i = 0; i < size; ++i) {
 		for (auto j = 0; j < size; ++j) {
 			a[i][j] = std::pow(j + 1 - index, i) / factorial(i);

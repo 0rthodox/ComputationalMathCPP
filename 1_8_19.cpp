@@ -2,9 +2,14 @@
 #include <iostream>
 #include <vector>
 
+using val = long double;
+
 template<typename Val>
 class Factorial {
 public:
+
+  Factorial& operator=(const Factorial&) = delete;
+
 	[[nodiscard]] Val operator()(size_t num) noexcept {
 		if (num < cache.size()) return cache.at(num);
 		cache.reserve(num);
@@ -65,7 +70,7 @@ template<typename Val>
 }
 
 template<typename Val>
-[[nodiscard]] Val exponent(Val t, Val epsilon = std::numeric_limits<Val>::epsilon()) noexcept {
+[[nodiscard]] Val exponent(Val t, Val epsilon = 1e-6/*std::numeric_limits<Val>::epsilon()*/) noexcept {
 	Val n = std::ceil(t / epsilon);
 	return std::pow((1 + t / n), n);
 }
@@ -82,21 +87,25 @@ template<typename Val>
 }
 
 int main() {
-	Factorial<long double> factorial;
-	auto deltaT = 1e-3L; // epsilon, long double
+	Factorial<val> factorial;
+	auto deltaT = 1e-3L; // epsilon, val
 	auto n = 0;
-	Power<long double> power1(1 + deltaT);
-	Power<long double> power2(11 + deltaT);
+	Power<val> power1(1 + deltaT);
+	Power<val> power2(11 + deltaT);
 	std::cout << "For sine function: " << std::endl;
 	for (; power1(2 * n + 1)/ factorial(2 * n + 1) > deltaT; ++n);
 	std::cout << "t in [0, 1]: n = " << n << std::endl;
 	for (n = 0; power2(2 * n + 1) / factorial(2 * n + 1) > deltaT; ++n);
 	std::cout << "t in [10, 11]: n = " << n << std::endl;
 	std::cout << "Input value for sine and exponent calculation: ";
-	long double t;
+	val t;
 	std::cin >> t;
-	std::cout << "Sin(" << t << ") = " << sine<long double>(t) << ' ' << std::sin(t) << std::endl;
-	std::cout << "Exp(" << t << ") = " << exponent<long double>(t) << ' ' << std::exp(t) << std::endl;
-	
-	return EXIT_SUCCESS;
+	std::cout << "Sin(" << t << ") = " << sine<val>(t) << ' ' << std::sin(t) << std::endl;
+	std::cout << "Exp(" << t << ") = " << exponent<val>(t) << ' ' << std::exp(t) << std::endl;
+//    val epsilon = 1e-3;
+//    val x = 11;
+//    int degree = 0;
+//    for (val n = 1; std::abs(exponent(x, n) - std::exp(x)) > epsilon; n /= 10) std::cout << degree-- << " degree is not enough\n";
+//    std::cout << "Desired degree: " << degree << std::endl;
+	  return EXIT_SUCCESS;
 }

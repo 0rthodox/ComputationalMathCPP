@@ -1,12 +1,11 @@
 #include <iostream>
 #include <cmath>
-#include <iomanip>
 #include <functional>
 
 using val = long double;
 
 template <typename Val>
-Val toBeIntegrated(Val x) {
+Val f(Val x) noexcept {
     return std::sin(100 * x) * std::exp(-x * x) * std::cos(2 * x);
 }
 
@@ -21,10 +20,10 @@ int main()
 {
     val step = 1e-6L;
     std::pair bounds = {val(), val(3)};
-    auto result = integrate<val>(toBeIntegrated<val>, bounds, step);
-    auto sResult = integrate<val>(toBeIntegrated<val>, bounds, step * 2);
+    auto result = integrate<val>(f<val>, bounds, step);
+    auto sResult = integrate<val>(f<val>, bounds, step * 2);
     std::cout.setf(std::ios::fixed);
-    std::cout.precision(std::numeric_limits<val>::digits10 - 1);
+    std::cout.precision(std::numeric_limits<val>::digits10 - 7);
     std::cout << "The answer is " << result << std::endl;
     std::cout << "Error is " << std::abs(result - sResult) / 3 << std::endl;
     system("pause");
